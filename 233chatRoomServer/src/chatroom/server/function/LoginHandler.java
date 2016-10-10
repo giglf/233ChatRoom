@@ -7,8 +7,8 @@ package chatroom.server.function;
 public class LoginHandler {
 	
 	
-	//checkIfExist password correct?
-	//sendLoginSuccess
-	//sendLoginFail
+	//checkUserExist password correct?
+	//loginSuccess->createClient
+	//loginFail->sendFailPacket
 	
 }

@@ -6,8 +6,7 @@ package chatroom.server.function;
  */
 public class RegisterHandler {
 	
-	//checkIfExist
-	//addToDatabase
-	//sendResultToClient
+	//checkUserExist->no, send fail OR yes, createNewUser()
+	//createNewUser
 	
 }
