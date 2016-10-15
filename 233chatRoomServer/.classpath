@@ -3,6 +3,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/233chatRoomClient"/>
-	<classpathentry kind="lib" path="E:/一些文档/2016大三上/网络程序设计_chatRoom/233chatRoom/233chatRoomServer/mysql-connector-java-5.1.40-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
