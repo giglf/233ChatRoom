@@ -73,6 +73,7 @@ public class DBManager {
 			preparedStatement.setString(1, user.getUsername());
 			preparedStatement.setString(2, user.getPassword());
 			preparedStatement.setBoolean(3, user.getSex());
+			preparedStatement.executeUpdate();
 		} catch (SQLException e) { //insert失败，已存在用户或数据库满，返回false
 			return false;
 		}
