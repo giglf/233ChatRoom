@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * A class use to operate the database.<br/> 
@@ -12,11 +13,11 @@ import java.sql.SQLException;
  */
 public class DBManager {
 
-	private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	private final String DB_URL = "jdbc:mysql://2bsticker.cn:3306/233chatroom?useSSL=true";
+	private final static String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+	private final static String DB_URL = "jdbc:mysql://localhost:3306/233chatroom?useSSL=true";
 	
-	private final String USER = "chatroom";
-	private final String PASS = "thePasswordThatEasyKnow";
+	private final static String USER = "chatroom";
+	private final static String PASS = "thePasswordThatEasyKnow";
 	
 	private Connection connection;
 	
@@ -90,7 +91,12 @@ public class DBManager {
 	
 	
 	//use for create user information table, but it is only run once.
-	/* 只使用一次用于建表的函数
+	//只使用一次用于建表的函数
+	/*
+	public static void main(String[] args) throws SQLException {
+		createTable();
+	}
+	
 	public static void createTable() throws SQLException {
 		Connection connection = null;
 		Statement statement = null;
@@ -108,7 +114,7 @@ public class DBManager {
 			statement = connection.createStatement();
 			
 			String sql = "CREATE TABLE UserInfo (" + 
-						 "username VARCHAR(255) UNIQUE NOT NULL, " +
+						 "username VARCHAR(32) PRIMARY KEY, " +
 						 "password CHAR(32) NOT NULL, " + 
 						 "sex BOOLEAN NOT NULL )";
 			
