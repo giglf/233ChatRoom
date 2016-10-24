@@ -1,8 +1,14 @@
 package chatroom.client.ui;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import chatroom.client.util.CryptoTools;
+import chatroom.client.util.DBManager;
+import chatroom.client.util.User;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,6 +30,8 @@ public class RegisterUI {
 	private Text username;
 	private Text password;
 	private Text ensurePassword;
+	Button maleButton;
+	Button femaleButton;
 
 	/**
 	 * Launch the application.
@@ -55,6 +63,7 @@ public class RegisterUI {
 
 	/**
 	 * Create contents of the window.
+	 * 界面绘制
 	 */
 	protected void createContents() {
 		shell = new Shell(SWT.CLOSE | SWT.MIN);
@@ -88,12 +97,12 @@ public class RegisterUI {
 		sex_text.setText("  性  别   :");
 		sex_text.setEditable(false);
 		
-		Button maleButton = new Button(shell, SWT.RADIO);
+		maleButton = new Button(shell, SWT.RADIO);
 		maleButton.setSelection(true);
 		maleButton.setBounds(115, 208, 39, 17);
 		maleButton.setText("男");
 		
-		Button femaleButton = new Button(shell, SWT.RADIO);
+		femaleButton = new Button(shell, SWT.RADIO);
 		femaleButton.setBounds(172, 208, 39, 17);
 		femaleButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -114,15 +123,55 @@ public class RegisterUI {
 		Button register = new Button(shell, SWT.NONE);
 		register.setBounds(33, 262, 80, 27);
 		register.setText("注    册");
+		register.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				registerOperation();
+			}
+		});
 		
 		Button back = new Button(shell, SWT.NONE);
 		back.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				shell.dispose();
 			}
 		});
 		back.setText("返    回");
 		back.setBounds(155, 262, 80, 27);
 
 	}
+	
+	//处理注册操作
+	private void registerOperation(){ 
+		User newUser = new User();
+
+		String pass = password.getText();
+		if(!ensurePassword.getText().equals(pass)){ //检查两次输入密码一致性
+			MessageBox dialog=new MessageBox(shell,SWT.OK|SWT.ICON_INFORMATION);
+			dialog.setText("注册失败");
+			dialog.setMessage("啊哈，两次输入密码不一样！");
+	        dialog.open();
+	        return;
+		}
+		newUser.setUsername(username.getText());
+		newUser.setPassword(CryptoTools.getMD5(pass));
+		newUser.setSex(maleButton.getSelection());
+		
+		DBManager dbManager = new DBManager();
+		if(dbManager.insert(newUser)){   //尝试插入数据库，以成功与否判断用户是否存在
+			MessageBox dialog=new MessageBox(shell,SWT.OK|SWT.ICON_INFORMATION);
+			dialog.setText("注册成功！");
+			dialog.setMessage("快去登陆吧！");
+			dialog.open();
+			shell.dispose();
+		} else{
+			MessageBox dialog=new MessageBox(shell,SWT.OK|SWT.ICON_INFORMATION);
+			dialog.setText("注册失败");
+			dialog.setMessage("用户已存在");
+			dialog.open();
+		}
+		
+	}
+	
 }
