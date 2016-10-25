@@ -32,11 +32,8 @@ public class RegisterUI {
 	private Text ensurePassword;
 	Button maleButton;
 	Button femaleButton;
-
-	/**
-	 * Launch the application.
-	 * @param args
-	 */
+	
+	/* testing code. No use anymore.
 	public static void main(String[] args) {
 		try {
 			RegisterUI window = new RegisterUI();
@@ -45,6 +42,7 @@ public class RegisterUI {
 			e.printStackTrace();
 		}
 	}
+	*/
 
 	/**
 	 * Open the window.

@@ -95,10 +95,11 @@ public class LoginUI {
 		back.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shell.dispose();
+				RegisterUI registerUI = new RegisterUI();
+				registerUI.open();
 			}
 		});
-		back.setText("ÍË    ³ö");
+		back.setText("×¢     ²á");
 		back.setBounds(155, 125, 80, 27);
 
 	}
