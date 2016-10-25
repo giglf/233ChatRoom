@@ -144,7 +144,17 @@ public class RegisterUI {
 	private void registerOperation(){ 
 		User newUser = new User();
 
+		String name = username.getText();
 		String pass = password.getText();
+		
+		if(name.equals("") || pass.equals("")){ //检查是否已输入用户名密码
+			MessageBox dialog=new MessageBox(shell,SWT.OK|SWT.ICON_INFORMATION);
+			dialog.setText("注册失败");
+			dialog.setMessage("用户名密码不能为空！");
+	        dialog.open();
+	        return;
+		}
+		
 		if(!ensurePassword.getText().equals(pass)){ //检查两次输入密码一致性
 			MessageBox dialog=new MessageBox(shell,SWT.OK|SWT.ICON_INFORMATION);
 			dialog.setText("注册失败");
@@ -152,7 +162,7 @@ public class RegisterUI {
 	        dialog.open();
 	        return;
 		}
-		newUser.setUsername(username.getText());
+		newUser.setUsername(name);
 		newUser.setPassword(CryptoTools.getMD5(pass));
 		newUser.setSex(maleButton.getSelection());
 		
