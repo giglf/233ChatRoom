@@ -42,24 +42,23 @@ public class DBManager {
 		User user = null;
 		ResultSet resultSet= null;
 		
-		String sql = "SELECT * FROM UserInfo WHERE username=? and password=?";
+		String sql = "SELECT username, sex FROM UserInfo WHERE username=? and password=?";
 		PreparedStatement preparedStatement = null;
 		try {
 			preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setString(1, username);
 			preparedStatement.setString(2, password);
 			
-			resultSet = preparedStatement.executeQuery();
-			
-			if(resultSet!=null){
-				user = new User();
-				user.setUsername(resultSet.getString("username"));
-				user.setPassword(resultSet.getString("password"));
-				user.setSex(resultSet.getBoolean("sex"));
-			}
+			resultSet = preparedStatement.executeQuery();  //如果找不到会抛出异常，不会返回空
+					
+			user = new User();
+			resultSet.next();    //resultSet开始指向查询到数据的前一行，需要用next移动游标获取第一行数据，因为结果唯一，故不用循环
+			user.setUsername(resultSet.getString("username"));
+			user.setPassword("The_True_Password_Won't_Show_To_Anybody"); // 登陆成功后不会把真实密码储存
+			user.setSex(resultSet.getBoolean("sex"));
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			return null;
 		}
 		return user;
 	}
