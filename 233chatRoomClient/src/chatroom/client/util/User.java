@@ -1,11 +1,16 @@
 package chatroom.client.util;
 
+import java.io.Serializable;
+
 /**
  * This is a User class for a normal user.<br/>
  * You should pay attention to the sex information.<br/>
  * true->male, false->female
  */
-public class User {
+public class User implements Serializable{
+	
+	private static final long serialVersionUID = 4871538102537423960L;
+	
 	
 	private String username;
 	private String password;
