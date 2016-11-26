@@ -83,6 +83,7 @@ public class DBManager {
 	public void close(){
 		try {
 			connection.close();
+			System.out.println("Connection to Database interrupt.");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
