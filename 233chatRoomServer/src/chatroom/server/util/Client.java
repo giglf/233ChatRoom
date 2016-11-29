@@ -69,6 +69,8 @@ public class Client{
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
+						terminate();		//读失败时，可能是因为链接异常中断，需关闭该链接
+						running = false;
 					}
 				}
 			}
