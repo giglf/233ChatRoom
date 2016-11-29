@@ -54,7 +54,7 @@ public class Client{
 							server.broadcast(packet);
 							break;
 						case CLIENT_ENTER:
-							connectUser = packet.userEnter;
+							connectUser = packet.source;
 							server.sendClientLists();
 							break;
 						case CLIENT_EXIT:

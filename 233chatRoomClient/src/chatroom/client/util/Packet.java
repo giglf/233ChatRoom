@@ -16,10 +16,9 @@ public class Packet implements Serializable{
 	}
 	
 	PACKET_TYPE packet_type = null;
-	public User userEnter;
+	public User source;
+	public User destination;
 	public String message;
-	public String source;
-	public String destination;
 	long filesize;
 	
 	private Packet(PACKET_TYPE type){
@@ -31,7 +30,7 @@ public class Packet implements Serializable{
 	}
 	
 	//发送Message包封装设置
-	public static Packet sendMessage(String src, String message){
+	public static Packet sendMessage(User src, String message){
 		Packet packet = new Packet(PACKET_TYPE.MESSAGE);
 		packet.source = src;
 		packet.message = message;
@@ -41,20 +40,19 @@ public class Packet implements Serializable{
 	//发送用户进入消息包封装设置
 	public static Packet sendEnter(User user){
 		Packet packet = new Packet(PACKET_TYPE.CLIENT_ENTER);
-		packet.userEnter = user;
-		packet.source = user.getUsername();
+		packet.source = user;
 		return packet;
 	}
 	
 	//发送用户退出包封装设置
-	public static Packet sendExit(String src){
+	public static Packet sendExit(User src){
 		Packet packet = new Packet(PACKET_TYPE.CLIENT_EXIT);
 		packet.source = src;
 		return packet;
 	}
 	
 //	//发送文件请求包封装设置
-//	public static Packet sendFileRequest(String src, String dest, String name, long size){
+//	public static Packet sendFileRequest(User src, User dest, String name, long size){
 //		Packet packet = new Packet(PACKET_TYPE.FILE_REQUEST);
 //		packet.destination = dest;
 //		packet.source = src;

@@ -121,7 +121,7 @@ public class ChatRoomUI {
 				if (arg0.keyCode == SWT.CR) {
 					String message = inputArea.getText();
 					try {
-						output.writeObject(Packet.sendMessage(self.getUsername(), message));   //发送消息
+						output.writeObject(Packet.sendMessage(self, message));   //发送消息
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -164,7 +164,7 @@ public class ChatRoomUI {
 							display.syncExec(new Runnable() {  //swt的实现方式决定，需要用UI同步进程，不然会卡住
 								@Override
 								public void run() {
-									showMessage(packet.source, packet.message);
+									showMessage(packet.source.getUsername(), packet.message);
 								}
 							});
 							break;
@@ -190,7 +190,8 @@ public class ChatRoomUI {
 	}
 	
 	//handle with client enter
-	private void clientEnter(String username) {
+	private void clientEnter(User user) {
+		String username = user.getUsername();
 		if(userList.indexOf(username)==-1){
 			userList.add(username);
 			showMessage(username, "--enter this chatroom--");
@@ -198,7 +199,8 @@ public class ChatRoomUI {
 	}
 	
 	//handle with client Exit
-	private void clientExit(String username) {
+	private void clientExit(User user) {
+		String username = user.getUsername();
 		userList.remove(username);
 		showMessage(username, "--exit this chatroom--");
 	}
@@ -217,7 +219,7 @@ public class ChatRoomUI {
 	//when the windows close, that should close some connections.
 	private void terminateAll(){
 		try {
-			output.writeObject(Packet.sendExit(self.getUsername()));
+			output.writeObject(Packet.sendExit(self));
 			
 			input.close();
 			output.close();
