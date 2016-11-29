@@ -1,22 +1,36 @@
 package chatroom.client.ui;
 
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 
@@ -107,6 +121,44 @@ public class ChatRoomUI {
 		userList = new List(shell, SWT.BORDER|SWT.V_SCROLL);
 		userList.setBounds(446, 10, 138, 401);		
 		
+		Menu userHandleMenu = new Menu(userList);
+		MenuItem sendFileItem = new MenuItem(userHandleMenu, SWT.PUSH);
+		sendFileItem.setText("Send File");
+		userList.setMenu(userHandleMenu);
+		
+		//发送文件按钮监听
+		sendFileItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+					if(userList.getSelectionIndex() == -1){
+						selectUserError();
+					} else{
+						//获取想要发送的用户
+						int select = userList.getSelectionIndex();
+						User selectUser = new User();
+						selectUser.setUsername(userList.getItem(select));
+						
+						//选择要发送的文件
+						FileDialog fd=new FileDialog(shell,SWT.OPEN); 
+						String filePath = fd.open();
+						textDisplay.append("******Sending " + filePath + " to " + selectUser.getUsername() + "******\n");
+						
+						//发送文件
+						File file = new File(filePath);
+						try {
+							output.writeObject(Packet.sendFileRequest(self, selectUser, file.getName(), file.length()));
+							sendFile(file);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {}
+		});
+		
 		inputArea = new Text(shell, SWT.BORDER);
 		inputArea.setBounds(10, 341, 430, 70);
 		
@@ -169,6 +221,13 @@ public class ChatRoomUI {
 							});
 							break;
 						case FILE_REQUEST:
+							display.syncExec(new Runnable() {
+								@Override
+								public void run() {
+									showMessage(packet.source.getUsername(), "Sending " + packet.message + " to you.\n");
+									downloadFile(packet);
+								}
+							});
 							break;
 						}
 					} catch (Exception e) {
@@ -179,14 +238,6 @@ public class ChatRoomUI {
 			}
 		});
 		thread.start();
-	}
-	
-	//when connect fail. Show a Message Box.
-	private void connectError(){
-		MessageBox dialog=new MessageBox(shell, SWT.OK|SWT.ICON_INFORMATION);
-		dialog.setText("网络连接错误");
-		dialog.setMessage("请检查网络设置");
-        dialog.open();
 	}
 	
 	//handle with client enter
@@ -210,6 +261,77 @@ public class ChatRoomUI {
 		textDisplay.append(username + " (" + date2String(LocalDateTime.now()) + "): " + message + "\n");
 	}
 	
+	//发送文件
+	private void sendFile(File file) {
+		try {
+			Socket sendFileSocket = new Socket(InetAddress.getByName(HOSTNAME), 6505);
+			System.out.println("Connected to server on port 6505...");
+			byte[] fileBytes = new byte[(int) file.length()];
+
+			BufferedInputStream buffer = new BufferedInputStream(new FileInputStream(file));
+			int bytesRead = buffer.read(fileBytes, 0, fileBytes.length);
+			System.out.format("Read %d bytes from %s.%n", bytesRead, file.getName());
+
+			OutputStream out = sendFileSocket.getOutputStream();
+			out.write(fileBytes, 0, fileBytes.length);
+			out.flush();
+			
+			System.out.println("File sending finished");
+			buffer.close();
+			out.close();
+			sendFileSocket.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//接受别人发来的文件
+	public void downloadFile(Packet packet){
+		try {
+			Socket downloadSocket = new Socket(InetAddress.getByName(HOSTNAME), 6506);
+			System.out.println("Connected to server on port 6506");
+			
+			byte[] fileBytes = new byte[(int) packet.filesize];
+			InputStream input = downloadSocket.getInputStream();
+			BufferedOutputStream buffer = new BufferedOutputStream(new FileOutputStream(packet.message));
+			
+			//每次读写操作是缓冲区大小有限制，必须通过循环读写完整的文件，不然当文件太大时会抛出读不到文件结尾的错误
+			int bytesRead = input.read(fileBytes, 0, fileBytes.length);
+			int currentOffset = bytesRead;
+			do{
+				bytesRead = input.read(fileBytes, currentOffset, fileBytes.length-currentOffset);
+				if(bytesRead >= 0){
+					currentOffset += bytesRead;
+				}
+			}while(currentOffset < fileBytes.length);
+			
+			buffer.write(fileBytes, 0, fileBytes.length);
+			buffer.flush();
+			
+			input.close();
+			buffer.close();
+			downloadSocket.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+	}
+	
+	//when connect fail. Show a Message Box.
+	private void connectError(){
+		MessageBox dialog=new MessageBox(shell, SWT.OK|SWT.ICON_INFORMATION);
+		dialog.setText("网络连接错误");
+		dialog.setMessage("请检查网络设置");
+        dialog.open();
+	}
+	
+	//When sendFile, should select user first.
+	private void selectUserError(){
+		MessageBox dialog=new MessageBox(shell, SWT.OK|SWT.ICON_INFORMATION);
+		dialog.setText("操作错误");
+		dialog.setMessage("请先选择用户");
+        dialog.open();
+	}
+	
 	//Change time message to String
 	private static String date2String(LocalDateTime localDateTime){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss");
@@ -228,5 +350,4 @@ public class ChatRoomUI {
 			e.printStackTrace();
 		}
 	}
-	
 }

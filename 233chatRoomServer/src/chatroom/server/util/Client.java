@@ -63,6 +63,10 @@ public class Client{
 							server.broadcast(Packet.sendExit(packet.source));
 							break;
 						case FILE_REQUEST:
+							Client sendClient = server.findClient(packet.destination.getUsername());
+							byte[] fileBytes = server.downloadFile(packet);
+							sendClient.getOutputStream().writeObject(packet);
+							server.sendFile(packet, fileBytes);
 							break;
 						default:
 							break;

@@ -19,7 +19,7 @@ public class Packet implements Serializable{
 	public User source;
 	public User destination;
 	public String message;
-	long filesize;
+	public long filesize;
 	
 	private Packet(PACKET_TYPE type){
 		packet_type = type;
@@ -51,14 +51,14 @@ public class Packet implements Serializable{
 		return packet;
 	}
 	
-//	//发送文件请求包封装设置
-//	public static Packet sendFileRequest(User src, User dest, String name, long size){
-//		Packet packet = new Packet(PACKET_TYPE.FILE_REQUEST);
-//		packet.destination = dest;
-//		packet.source = src;
-//		packet.message = name;
-//		packet.filesize = size;
-//		return packet;
-//	}
+	//发送文件请求包封装设置
+	public static Packet sendFileRequest(User src, User dest, String filename, long size){
+		Packet packet = new Packet(PACKET_TYPE.FILE_REQUEST);
+		packet.destination = dest;
+		packet.source = src;
+		packet.message = filename;
+		packet.filesize = size;
+		return packet;
+	}
 	
 }
