@@ -16,9 +16,8 @@ import chatroom.client.util.DBManager;
 import chatroom.client.util.User;
 
 /**
- * This will act as LoginUI
- * @author giglf
- *
+ *	用户登录界面，通过查询对应的数据库以确认账号密码正确与否</br>
+ *	数据库操作通过DBManager实现
  */
 public class LoginUI {
 	
@@ -31,8 +30,7 @@ public class LoginUI {
 	private DBManager dbManager;
 
 	/**
-	 * Launch the application.
-	 * @param args
+	 *	客户端程序的启动入口
 	 */
 	public static void main(String[] args) {
 		try {
@@ -44,7 +42,7 @@ public class LoginUI {
 	}
 
 	/**
-	 * Open the window.
+	 * SWT Open the window.
 	 */
 	public void open() {
 		Display display = Display.getDefault();
@@ -98,7 +96,7 @@ public class LoginUI {
 		Button register = new Button(shell, SWT.NONE);
 		register.setBounds(43, 125, 80, 27);
 		register.setText("登    陆");
-		register.addSelectionListener(new SelectionAdapter() {
+		register.addSelectionListener(new SelectionAdapter() { //登录按钮监听
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				checkLogin();
@@ -108,7 +106,7 @@ public class LoginUI {
 		Button back = new Button(shell, SWT.NONE);
 		back.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent e) {  //注册按钮监听
 				RegisterUI registerUI = new RegisterUI();
 				registerUI.open(dbManager);
 			}
@@ -123,7 +121,8 @@ public class LoginUI {
 		String name = username.getText();
 		String pass = password.getText();
 		
-		if(name.equals("") || pass.equals("")){
+		//当用户名和密码为空时提示错误
+		if(name.equals("") || pass.equals("")){	
 			MessageBox dialog=new MessageBox(shell,SWT.OK|SWT.ICON_INFORMATION);
 			dialog.setText("登陆失败");
 			dialog.setMessage("请输入用户名或密码");
@@ -131,6 +130,7 @@ public class LoginUI {
 	        return;
 		}
 		
+		//从数据库查询相应的用户名密码，成功则打开ChatroomUI进行连接
 		User user = dbManager.select(name, CryptoTools.getMD5(pass));
 		if(user==null){
 			MessageBox dialog=new MessageBox(shell,SWT.OK|SWT.ICON_INFORMATION);

@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 public class User implements Serializable{
 	
+	//I want to send this class by socket. So it must be Serial.
 	private static final long serialVersionUID = 4871538102537423960L;
 	
 	

@@ -11,6 +11,7 @@ public class Packet implements Serializable{
 	//实现类序列化
 	private static final long serialVersionUID = -4618691721228452054L;
 
+	//定义发送包的类型
 	public enum PACKET_TYPE{
 		MESSAGE, FILE_REQUEST, CLIENT_ENTER, CLIENT_EXIT
 	}

@@ -13,15 +13,15 @@ import chatroom.server.util.Client;
 
 
 /**
- * Main running in Server 
- *
+ * Main running in Server </br>
+ * 功能： 转发消息、文件，实现客户端之间的文件传输
  */
 public class ChatServer {
 	
-	private static final int PORT = 23399;
-	private ServerSocket serverSocket;
-	private ServerSocket downloadSocket;
-	private ServerSocket sendSocket;
+	private static final int PORT = 23399;		//监听端口
+	private ServerSocket serverSocket;			//服务端Socket
+	private ServerSocket downloadSocket;		//接受用户发送文件的Socket
+	private ServerSocket sendSocket;			//发送文件给用户的Socket
 	private List<Client> clientList = new ArrayList<Client>();
 	
 	public static void main(String[] args) {
@@ -35,9 +35,9 @@ public class ChatServer {
 			public void run() {
 				try {
 					serverSocket = new ServerSocket(PORT);
-					while(true){
+					while(true){ //开始循环监听
 						System.out.println("Listening on port " + PORT + " ...");
-						Client newClient = new Client(chatServer, serverSocket);
+						Client newClient = new Client(chatServer, serverSocket);  //accept()在Client中处理
 						System.out.println("Connected: " + newClient.getSocket().getInetAddress().getHostName());
 						clientList.add(newClient);
 						newClient.listenToConnection();

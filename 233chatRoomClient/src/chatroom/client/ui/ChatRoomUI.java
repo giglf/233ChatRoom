@@ -38,13 +38,13 @@ import chatroom.client.util.Packet;
 import chatroom.client.util.User;
 
 /**
- * This will act as an UI list the online users.
- * @author giglf
- *
+ *	用户真正聊天界面</br>
+ *	同时也是客户端的主程序，用于建立与服务端的Socket链接</br>
+ *	接受来自服务端的数据
  */
 public class ChatRoomUI {
 
-	protected Text inputArea; //设置为public为了在ChatClient中设置监听事件
+	protected Text inputArea;
 	protected List userList; 
 	protected Shell shell;
 	protected Text textDisplay;
@@ -57,10 +57,8 @@ public class ChatRoomUI {
 	private static final int PORT = 23399;
 	private static final String HOSTNAME = "localhost";
 	
-	/**
-	 * Launch the application.
-	 * @param args
-	 */
+
+	
 	public ChatRoomUI(User user){
 		self = user;
 		boolean isConnect = true;
@@ -78,9 +76,7 @@ public class ChatRoomUI {
 		this.open(isConnect);
 	}
 
-//	public static void main(String[] args) {
-//		ChatRoomUI oListUI = new ChatRoomUI();
-//	}
+	
 	
 	/**
 	 * Open the window.
@@ -94,7 +90,7 @@ public class ChatRoomUI {
 			connectError();     //网络连接不上时弹出通知框
 			shell.dispose();
 		}
-		run(display);
+		run(display); //循环接受来自服务端的数据
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
@@ -105,7 +101,6 @@ public class ChatRoomUI {
 
 	/**
 	 * Create contents of the window.
-	 * @wbp.parser.entryPoint
 	 */
 	protected void createContents() {
 		shell = new Shell(SWT.CLOSE | SWT.MIN);
@@ -170,7 +165,7 @@ public class ChatRoomUI {
 		inputArea.addKeyListener(new KeyListener() { //输入框事件监听
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				if (arg0.keyCode == SWT.CR) {
+				if (arg0.keyCode == SWT.CR) {		//检测到键盘回车键被按下时发送消息 （小键盘的回车键不行）
 					String message = inputArea.getText();
 					try {
 						output.writeObject(Packet.sendMessage(self, message));   //发送消息
@@ -221,7 +216,7 @@ public class ChatRoomUI {
 							});
 							break;
 						case FILE_REQUEST:
-							display.syncExec(new Runnable() {
+							display.syncExec(new Runnable() {  //swt的实现方式决定，需要用UI同步进程，不然会卡住
 								@Override
 								public void run() {
 									showMessage(packet.source.getUsername(), "Sending " + packet.message + " to you.\n");
