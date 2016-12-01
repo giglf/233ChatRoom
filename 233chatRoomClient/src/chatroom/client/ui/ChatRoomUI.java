@@ -105,7 +105,7 @@ public class ChatRoomUI {
 	protected void createContents() {
 		shell = new Shell(SWT.CLOSE | SWT.MIN);
 		shell.setSize(600, 450);
-		shell.setText("233ChatRoom");
+		shell.setText(self.getUsername() + "'s chatroom");
 		shell.addShellListener(new ShellAdapter() {  //当窗口关闭时关闭连接
 			@Override
 			public void shellClosed(ShellEvent e) {  
